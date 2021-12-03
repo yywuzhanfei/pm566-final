@@ -7,11 +7,6 @@ output:
         toc_float: TRUE
 ---
 
-<br>
-
-This is my PM566 Final Project website. I will showcase a few interactive visuals here.
-
-<br>
 
 ```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
 
@@ -52,6 +47,13 @@ opts_chunk$set(
 }
 ```
 
+## Introduction 
+
+COVID-19 is a global pandemic that affects our health and life. By exploring the COVID-19 condition, we can make take possible actions to better contain its spread and make plans for the future. In this project, we mainly study the COVID-19 condition in the United States. The data for this study comes from https://covidtracking.com/data/api, https://covid.cdc.gov/covid-data-tracker/#demographics and https://github.com/nytimes/covid-19-data
+
+Unfortunately, this dataset stop collecting data since 03/07/21, so all my conclusions and answers to the questions are based on before that time.
+
+The tendency of COVID-19 can reflect how will this pandemic will proceed into the future.We can illustrate the pandemic tendency using three important variables: New COVID-19 Tests, New Positive Cases, New Death Cases. 
 
 ```{r,echo=FALSE}
 df = fread("data/national-history.csv")
@@ -73,7 +75,8 @@ p <- df_melted %>%
 ggplotly(p)
 ```
 
-
+- We have reached the turning point in which the actual condition gets better. 
+- The new death cases is becoming less and less and the increasing curve is just like new positive cases.
 ```{r,echo=FALSE}
 df_case = fread("./data/cases_by_age_group.csv")
 df_death = fread("./data/deaths_by_age_group.csv")
@@ -93,7 +96,8 @@ p <- ggplot(df,aes(x=age, y=percent))+geom_bar(stat="identity",fill="Orange")+
    "black"),plot.title = element_text(hjust = 0.5))+ggtitle("Infection status of different age groups")
 ggplotly(p)
 ```
-
+- The younger people have a higher infection rate than other populations. 
+- The older people tends to be impacted seriously by the virus, thus leading to the higher death rate among the population.
 ```{r, echo=FALSE}
 df2 = data.table::fread("data/states_current.csv")
 df_popu = data.table::fread("./data/us_census_2018_population_estimates_states.csv")
@@ -118,3 +122,5 @@ p3 <- plot_geo(df3) %>%
 p3
 ```
 
+- Different states have different population infection rate now. Some states such as North Dakota and South Dakota are more serious than others. 
+- The population infection rate has reached a significant level relative to the population intensity.
