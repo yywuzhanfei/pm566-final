@@ -49,7 +49,7 @@ opts_chunk$set(
 
 <br>
 ## Introduction 
-<br>
+<br> 
 COVID-19 is a global pandemic that affects our health and life. By exploring the COVID-19 condition, we can make take possible actions to better contain its spread and make plans for the future. In this project, we mainly study the COVID-19 condition in the United States. The data for this study comes from https://covidtracking.com/data/api, https://covid.cdc.gov/covid-data-tracker/#demographics and https://github.com/nytimes/covid-19-data
 
 Unfortunately, this dataset stop collecting data since 03/07/21, so all my conclusions and answers to the questions are based on before that time.
