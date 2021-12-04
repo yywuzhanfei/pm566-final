@@ -47,15 +47,37 @@ opts_chunk$set(
 }
 ```
 
+<br>
 ## Introduction 
-
+<br>
 COVID-19 is a global pandemic that affects our health and life. By exploring the COVID-19 condition, we can make take possible actions to better contain its spread and make plans for the future. In this project, we mainly study the COVID-19 condition in the United States. The data for this study comes from https://covidtracking.com/data/api, https://covid.cdc.gov/covid-data-tracker/#demographics and https://github.com/nytimes/covid-19-data
 
 Unfortunately, this dataset stop collecting data since 03/07/21, so all my conclusions and answers to the questions are based on before that time.
 
-The tendency of COVID-19 can reflect how will this pandemic will proceed into the future.We can illustrate the pandemic tendency using three important variables: New COVID-19 Tests, New Positive Cases, New Death Cases. 
+<br>
+
+## Condition Overview
+
+<br>
+
+Here is the summary of the latest numbers about the total tests, accumulated confirmed case numbers, accumulated deaths. 
 
 ```{r,echo=FALSE}
+df = fread("data/national-history.csv")
+overview = df[1,c("date","totalTestResults","positive","death")]
+colnames(overview) = c("date","total tests", "accumulated confirmed case numbers", "accumulated deaths")
+kable(overview)
+```
+
+<br>
+
+## Pandemic Tendency
+
+<br>
+
+The tendency of COVID-19 can reflect how will this pandemic will proceed into the future.We can illustrate the pandemic tendency using three important variables: New COVID-19 Tests, New Positive Cases, New Death Cases. 
+
+```{r,echo=FALSE, fig.align = 'center'}
 df = fread("data/national-history.csv")
 #overview = df[1,c("date","totalTestResults","positive","recovered","death")]
 #colnames(overview) = c("date","total tests", "accumulated confirmed case numbers", "accumulated recoveries", "accumulated deaths")
@@ -74,9 +96,17 @@ p <- df_melted %>%
    ggtitle("COVID-19 Pandemic Tendencies")
 ggplotly(p)
 ```
+**Insight**:
 
 - We have reached the turning point in which the actual condition gets better. 
 - The new death cases is becoming less and less and the increasing curve is just like new positive cases.
+
+<br>
+
+## Community Infection Status
+
+<br>
+
 ```{r,echo=FALSE}
 df_case = fread("./data/cases_by_age_group.csv")
 df_death = fread("./data/deaths_by_age_group.csv")
@@ -96,8 +126,17 @@ p <- ggplot(df,aes(x=age, y=percent))+geom_bar(stat="identity",fill="Orange")+
    "black"),plot.title = element_text(hjust = 0.5))+ggtitle("Infection status of different age groups")
 ggplotly(p)
 ```
+**Insight:**
+
 - The younger people have a higher infection rate than other populations. 
 - The older people tends to be impacted seriously by the virus, thus leading to the higher death rate among the population.
+
+<br>
+
+## Population Infection Rate
+
+<br>
+
 ```{r, echo=FALSE}
 df2 = data.table::fread("data/states_current.csv")
 df_popu = data.table::fread("./data/us_census_2018_population_estimates_states.csv")
@@ -117,10 +156,72 @@ p3 <- plot_geo(df3) %>%
                   projection = list(type = 'albers usa'),
                   lakecolor = toRGB('white')
                  ),
-         title=paste('population infection rate(20201111) ','<br>(Hover for value)')
+         title=paste('population infection rate(20210307) ','<br>(Hover for value)')
         )
 p3
 ```
+**Insight:**
 
 - Different states have different population infection rate now. Some states such as North Dakota and South Dakota are more serious than others. 
 - The population infection rate has reached a significant level relative to the population intensity.
+<br>
+
+## Key Information
+
+<br>
+
+The text-mining of the notes gathered from every state are helpful for us to know the main topics. Here, we choose to display them using word tokens and tri-grams.
+
+```{r,echo=FALSE}
+#df = fread("https://api.covidtracking.com/v1/states/info.csv")
+df = fread("data/info.csv")
+library(tidytext)
+df1 <- df %>%
+   unnest_ngrams(ngram, notes,n=3) %>%
+   count(ngram,sort=TRUE) %>%
+   top_n(20, n)
+
+df2 <-df %>%
+  unnest_tokens(word, notes) %>%
+  anti_join(stop_words, by = c("word")) %>%
+  count(word, sort = TRUE) %>%
+  top_n(25, n)
+set.seed(10)
+p1 <- ggplot(
+  df1,
+  aes(
+    label = ngram, size = n,
+    color = factor(sample.int(10, nrow(df1), replace = TRUE)),
+  )
+) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 10) +
+  theme_minimal()+theme(plot.title = element_text(hjust = 0.5))+ggtitle("tri-gram word cloud")
+p2 <- ggplot(
+  df2,
+  aes(
+    label = word, size = n,
+    color = factor(sample.int(10, nrow(df2), replace = TRUE)),
+  )
+) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 20) +
+  theme_minimal()+theme(plot.title = element_text(hjust = 0.5))+ggtitle("token-level word cloud")
+p <- ggarrange(p2, p1, labels = c("A", "B"),
+          ncol = 1, nrow = 2)
+
+p
+```
+<br>
+
+## Summary
+
+<br>
+
+How is the COVID-19 condition in the United States at the begining of March this year?
+
+To begin with, the COVID-19 condition is not optimistic still, we can see the huge numbers of cases in the overview part.  Firstly, the infection is still continuously growing. Secondly, the virus infections and impacts are different in terms of different age groups and races/ethnicities. Thirdly, The population infection rate is different across different states and has already reached a significant level of around 2%. Finally, most states are mainly working on doing COVID-19 testing now, this is the key information we should pay attention to.
+
+<br>
+<br>
+
