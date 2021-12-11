@@ -1,5 +1,5 @@
 ---
-title: "PM566 Final Project"
+title: "Covid-19 Tendancy in USA"
 author: "Mingxi Xu"
 output: 
     html_document:
